@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Somnistics Research Labs · An Introduction</title>
+<style>
+  :root{
+    --paper:#F5F1E8; --card:#FFFDF8; --ink:#1F2421; --muted:#6B6A60;
+    --line:#E4DCCB; --teal:#14746F; --teal-deep:#0E5450; --teal-soft:#E6F0EE;
+    --amber:#C6692B; --shadow:0 18px 50px rgba(31,36,33,.10);
+    --serif:Georgia,'Times New Roman',serif;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);
+    line-height:1.5;-webkit-font-smoothing:antialiased;overflow:hidden}
+
+  .deck{position:fixed;inset:0}
+  .slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;
+    align-items:center;text-align:center;padding:72px 30px 100px;
+    opacity:0;visibility:hidden;transform:translateY(14px);
+    transition:opacity .6s ease, transform .6s ease, visibility .6s;pointer-events:none}
+  .slide.active{opacity:1;visibility:visible;transform:none;pointer-events:auto}
+  .inner{max-width:770px;width:100%}
+
+  .kicker{font-family:var(--serif);letter-spacing:.16em;text-transform:uppercase;font-size:13px;
+    color:var(--amber);margin-bottom:18px}
+  h1{font-family:var(--serif);font-weight:600;font-size:clamp(34px,6vw,58px);line-height:1.07;margin:0 0 .3em}
+  h2{font-family:var(--serif);font-weight:600;font-size:clamp(27px,4.6vw,44px);line-height:1.12;margin:0 0 .35em}
+  .lede{font-size:clamp(16px,2.2vw,20px);color:var(--muted);max-width:630px;margin:0 auto}
+  .lede.dark{color:var(--ink)}
+  .em{color:var(--teal-deep);font-weight:600}
+  .amberword{color:var(--amber);font-weight:600}
+  .quote{font-family:var(--serif);font-style:italic;font-size:clamp(21px,3.2vw,31px);line-height:1.34;
+    color:var(--teal-deep);max-width:720px;margin:0 auto}
+  .qattr{font-family:var(--serif);font-size:15px;color:var(--muted);margin-top:24px;font-style:normal}
+  .cite{color:var(--muted);font-size:14px;margin-top:22px}
+
+  .slide.cover{background:radial-gradient(130% 90% at 50% 8%,#12706B 0%,#0E5450 46%,#0A3E3B 100%);color:#F3EEE2}
+  .slide.cover .kicker{color:#8FD4CD}
+  .slide.cover h1{color:#FFFDF8}
+  .slide.cover .lede{color:#CFE3DF}
+  .brandmark{font-family:var(--serif);letter-spacing:.10em;text-transform:uppercase;
+    font-size:14px;color:#8FD4CD;margin-bottom:30px}
+  .slide.deepteal{background:radial-gradient(130% 90% at 50% 20%,#12706B,#0A3E3B);color:#F3EEE2}
+  .slide.deepteal .kicker{color:#8FD4CD}
+  .slide.deepteal h2,.slide.deepteal h1{color:#FFFDF8}
+  .slide.deepteal .quote{color:#EAF4F1}
+  .slide.deepteal .qattr{color:#9FBDB8}
+  .slide.deepteal .lede{color:#CFE3DF}
+  .slide.deepteal .cite{color:#9FBDB8}
+  .teal-accent{color:#8FD4CD;font-weight:600}
+
+  .stats{display:flex;gap:26px;justify-content:center;flex-wrap:wrap;margin:36px 0 6px}
+  .stat{min-width:190px}
+  .stat .num{font-family:var(--serif);font-weight:600;font-size:clamp(40px,6.5vw,62px);color:var(--amber);line-height:1}
+  .stat .lab{color:var(--muted);font-size:14.5px;margin-top:10px;max-width:230px;margin-left:auto;margin-right:auto}
+
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:30px;text-align:left}
+  .cc{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 18px 20px;box-shadow:var(--shadow)}
+  .cc .cn{font-family:var(--serif);font-size:17px;font-weight:600;margin-bottom:5px}
+  .cc .cd{color:var(--muted);font-size:13.5px}
+  .cc .ci{font-family:var(--serif);color:var(--amber);font-size:12px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:9px}
+
+  .revealbtn{background:var(--teal);color:#fff;border:none;border-radius:14px;padding:13px 26px;font-size:16px;
+    font-weight:600;cursor:pointer;font-family:var(--sans);margin-top:26px}
+  .revealbtn:hover{background:var(--teal-deep)}
+  .revealed{margin-top:22px;max-width:640px;margin-left:auto;margin-right:auto;opacity:0;transform:translateY(8px);
+    transition:.5s}
+  .revealed.show{opacity:1;transform:none}
+  .bignum{font-family:var(--serif);font-weight:600;color:var(--amber);font-size:clamp(46px,9vw,84px);line-height:1}
+
+  .orbwrap{height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-top:6px}
+  .orb{width:94px;height:94px;border-radius:50%;
+    background:radial-gradient(circle at 38% 34%,#7FD3CC,#2E9A93 55%,#12706B);
+    box-shadow:0 10px 40px rgba(0,0,0,.30);transform:scale(.62);
+    transition:transform 5.5s ease-in-out}
+  .cue{font-family:var(--serif);font-size:20px;color:#EAF4F1;margin-top:18px;min-height:26px}
+  .phases{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:22px}
+  .phases .ph{font-family:var(--serif);font-size:13.5px;letter-spacing:.04em;color:#9FBDB8;
+    border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:6px 14px}
+  .phases .sep{color:#8FD4CD}
+
+  .products{display:flex;flex-direction:column;gap:11px;margin-top:26px;text-align:left;max-width:660px;margin-left:auto;margin-right:auto}
+  .prod{display:flex;gap:16px;align-items:baseline;background:var(--card);border:1px solid var(--line);
+    border-radius:14px;padding:14px 18px;box-shadow:var(--shadow)}
+  .prod .pn{font-family:var(--serif);font-size:16.5px;font-weight:600;min-width:180px}
+  .prod .pd{color:var(--muted);font-size:13.5px}
+
+  .chain{display:flex;gap:9px;justify-content:center;align-items:center;flex-wrap:wrap;margin-top:30px}
+  .chain .node{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:9px 17px;
+    font-family:var(--serif);font-size:15px;box-shadow:var(--shadow)}
+  .chain .node.hot{background:var(--teal);color:#fff;border-color:var(--teal)}
+  .chain .arrow{color:var(--amber);font-size:17px}
+
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:30px;text-align:left}
+  .col{border-radius:16px;padding:20px 22px}
+  .col.them{background:#fff;border:1px solid var(--line)}
+  .col.us{background:var(--teal-soft);border:1px solid #CFE3DF}
+  .col h3{font-family:var(--serif);font-size:15px;letter-spacing:.06em;text-transform:uppercase;margin:0 0 10px}
+  .col.them h3{color:var(--muted)} .col.us h3{color:var(--teal-deep)}
+  .col p{margin:0;font-size:15px;color:var(--ink)}
+  .col.them p{color:var(--muted)}
+
+  .progress{position:fixed;top:0;left:0;height:3px;background:var(--teal);width:0;transition:width .5s ease;z-index:20}
+  .dots{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);display:flex;gap:9px;z-index:20}
+  .dot{width:9px;height:9px;border-radius:50%;background:var(--line);border:none;cursor:pointer;padding:0;transition:.2s}
+  .dot.on{background:var(--teal);transform:scale(1.25)}
+  .dot.light{background:rgba(255,255,255,.30)} .dot.light.on{background:#fff}
+  .nav{position:fixed;bottom:20px;z-index:20;display:flex;gap:8px}
+  .nav.left{left:22px} .nav.right{right:22px}
+  .navbtn{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--card);
+    color:var(--teal-deep);font-size:20px;cursor:pointer;box-shadow:var(--shadow);transition:.15s}
+  .navbtn:hover{background:var(--teal);color:#fff;border-color:var(--teal)}
+  .navbtn[disabled]{opacity:.3;cursor:default}
+  .counter{position:fixed;top:16px;right:22px;font-family:var(--serif);font-size:13px;color:var(--muted);z-index:20;letter-spacing:.05em}
+  .hint{position:fixed;bottom:56px;left:50%;transform:translateX(-50%);font-size:12.5px;color:var(--muted);
+    z-index:20;letter-spacing:.04em;transition:opacity .6s}
+  .foot-priv{position:fixed;top:16px;left:22px;font-family:var(--serif);font-size:12px;color:var(--muted);
+    letter-spacing:.06em;text-transform:uppercase;z-index:20}
+  @media (max-width:640px){.cards,.two{grid-template-columns:1fr}.prod .pn{min-width:130px}.stat{min-width:150px}}
+  @media (prefers-reduced-motion:reduce){.slide{transition:opacity .2s}.orb{transition:transform .3s}}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="foot-priv">Somnistics Research Labs</div>
+<div class="counter" id="counter">01 / 11</div>
+
+<div class="deck" id="deck">
+
+  <!-- 0 · COVER -->
+  <section class="slide cover active">
+    <div class="inner">
+      <div class="brandmark">Somnistics Research Labs</div>
+      <div class="kicker">An Introduction</div>
+      <h1>Re-embody humanity,<br>one breath at a time.</h1>
+      <p class="lede"><em>Somnistics</em> (n.) — the applied science of training neural state
+      transitions under pressure.</p>
+      <div class="cite" style="margin-top:34px;color:#8FD4CD">Press&nbsp; → &nbsp;or space to begin</div>
+    </div>
+  </section>
+
+  <!-- 1 · FOUNDER / ORIGIN -->
+  <section class="slide deepteal">
+    <div class="inner">
+      <div class="kicker">Where it comes from</div>
+      <p class="quote">"I've spent 40,000 hours watching life hang in the balance. I learned that survival
+      often comes down to how well we manage the space between what just happened and what we do next.
+      Gap Moments aren't wasted time. They're the frontier of resilience — and we're going to make them a literacy."</p>
+      <p class="qattr">Randy Graybeal, CRNA · Founder · 28 years at the head of the table</p>
+    </div>
+  </section>
+
+  <!-- 2 · THE STAKES -->
+  <section class="slide">
+    <div class="inner">
+      <div class="kicker">The stakes</div>
+      <h2>The people who hold the line<br>are burning out.</h2>
+      <p class="lede">A career of sustained vigilance exacts a price — paid in clinicians, and in the
+      cost of losing the ones who do it well.</p>
+      <div class="stats">
+        <div class="stat"><div class="num" data-to="60" data-suffix="%+">0</div>
+          <div class="lab">of healthcare workers report burnout since the pandemic</div></div>
+        <div class="stat"><div class="num" data-prefix="$" data-to="150" data-suffix="K">0</div>
+          <div class="lab">to replace a single departing CRNA</div></div>
+        <div class="stat"><div class="num" data-to="40" data-suffix="K+">0</div>
+          <div class="lab">clinical hours behind our founder's read on the problem</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 · THE REFRAME -->
+  <section class="slide">
+    <div class="inner">
+      <div class="kicker">The insight</div>
+      <h2>The training surface was<br>hiding in plain sight.</h2>
+      <p class="lede dark">A typical CRNA shift holds <span class="amberword">30–40 natural transitions</span> —
+      pre-op, induction, the seam before the surgeon starts, emergence, turnover, the drive home. We call
+      them <span class="em">Gap Moments</span>™.</p>
+      <p class="lede" style="margin-top:20px">The reframe: a Gap Moment isn't downtime to fill. It's a rep
+      you already own. You don't add a practice to the day — you make conscious a moment that's already there.</p>
+    </div>
+  </section>
+
+  <!-- 4 · THE MECHANISM -->
+  <section class="slide">
+    <div class="inner">
+      <div class="kicker">The mechanism</div>
+      <h2>Not calmer. Wider range.</h2>
+      <p class="lede">The high-functioning clinician under pressure isn't the calmest one in the room —
+      it's the one whose nervous system mobilizes fast and recovers fast. That property is
+      <span class="em">autonomic flexibility</span>, and it is trainable.</p>
+      <div class="cards">
+        <div class="cc"><div class="ci">Frequency</div><div class="cn">Resonant breathing</div>
+          <div class="cd">Paced breath near ~5.5/min drives heart-rate variability to its peak — a measurable autonomic shift within a single session.</div></div>
+        <div class="cc"><div class="ci">Skill</div><div class="cn">Diaphragmatic literacy</div>
+          <div class="cd">Feeling and steering the diaphragm on purpose — the prerequisite most experienced clinicians have quietly lost.</div></div>
+        <div class="cc"><div class="ci">Outcome</div><div class="cn">Autonomic flexibility</div>
+          <div class="cd">A wider envelope of mobilize-and-recover. Training doesn't lower arousal; it enlarges the range.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 · THE FINDING (reveal) -->
+  <section class="slide">
+    <div class="inner">
+      <div class="kicker">The signature finding</div>
+      <h2>Most clinicians have lost contact<br>with the muscle they manage all day.</h2>
+      <p class="lede">In an informal test of 30 anesthesia professionals on their breaks, we asked them to
+      engage the diaphragm on command. How many could?</p>
+      <button class="revealbtn" id="revealBtn">Reveal the number</button>
+      <div class="revealed" id="revealBox">
+        <div class="bignum">2 <span style="font-size:.5em;color:var(--muted);font-weight:400">of 30</span></div>
+        <p class="lede dark" style="margin-top:10px">A singer and a trumpet player — the two who had built the
+        cortical map through art. The other <span class="amberword">28 breathed with accessory muscles alone.</span>
+        With 30 seconds of coaching, all 30 reached a 10-second diaphragmatic inhale. The capacity was always
+        there. The awareness wasn't — and awareness is trainable.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 · THE UNIT (live orb) -->
+  <section class="slide deepteal" data-orb="1">
+    <div class="inner">
+      <div class="kicker">The unit of practice</div>
+      <h2>The NeuroMinute™</h2>
+      <p class="lede">Sixty seconds of paced breath, delivered at a Gap Moment — one clear signal to the
+      nervous system, dense and repeatable. Breathe with the orb.</p>
+      <div class="orbwrap">
+        <div class="orb" id="deckOrb"></div>
+        <div class="cue" id="deckCue">in…</div>
+      </div>
+      <div class="phases">
+        <span class="ph">Acknowledge</span><span class="sep">→</span>
+        <span class="ph">Observe</span><span class="sep">→</span>
+        <span class="ph">Differentiate</span><span class="sep">→</span>
+        <span class="ph">Presence</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 · THE SYSTEM / PRODUCTS -->
+  <section class="slide">
+    <div class="inner">
+      <div class="kicker">What we build</div>
+      <h2>A system, not an app.</h2>
+      <p class="lede">The Gap Moment is the occasion. The NeuroMinute is the dose. Around them we build the
+      method, the measurement, and the accreditation clinicians actually need.</p>
+      <div class="products">
+        <div class="prod"><div class="pn">Pausality™</div><div class="pd">Consumer app + clinical platform for biometric-verified nervous-system training — the primary product.</div></div>
+        <div class="prod"><div class="pn">Pausality CE</div><div class="pd">AANA-approved continuing education for CRNAs (3.0 credits) — the clinical wedge.</div></div>
+        <div class="prod"><div class="pn">Gap Moment Training™</div><div class="pd">The method: the 30–40 daily transitions, trained as autonomic-regulation reps.</div></div>
+        <div class="prod"><div class="pn">Anterocept™</div><div class="pd">A progressive interoceptive training spectrum — perception, discrimination, regulation.</div></div>
+        <div class="prod"><div class="pn">Neurogating™</div><div class="pd">AI-driven closed-loop detection that catches the state drift and serves the right rep.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8 · DIFFERENTIATION -->
+  <section class="slide">
+    <div class="inner">
+      <div class="kicker">Why we're different</div>
+      <h2>The anti-wellness app.</h2>
+      <p class="lede">Most of the category is built to keep you coming back. We're built to make you not need us.</p>
+      <div class="two">
+        <div class="col them"><h3>Wellness apps</h3><p>Drive dependency — streaks, gamification, daily hooks. Success looks like retention.</p></div>
+        <div class="col us"><h3>Somnistics</h3><p>Drives autonomy — skills that reduce app reliance over time. Success looks like a clinician who has internalized the capacity.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9 · WEDGE -> UNIVERSAL -->
+  <section class="slide">
+    <div class="inner">
+      <div class="kicker">The expansion</div>
+      <h2>CRNAs are the wedge.<br>The tools are universal.</h2>
+      <p class="lede">The same 60-second format transfers because the nervous system is the same. Where
+      there are high stakes, time pressure, and transitions, there are Gap Moments.</p>
+      <div class="chain">
+        <span class="node hot">CRNAs</span><span class="arrow">→</span>
+        <span class="node">Law students</span><span class="arrow">→</span>
+        <span class="node">First responders</span><span class="arrow">→</span>
+        <span class="node">Pilots</span><span class="arrow">→</span>
+        <span class="node">Anyone under pressure</span>
+      </div>
+      <p class="cite">Validated beyond the OR in a 7-day pilot with law students at the Brooklyn Law
+      Incubator &amp; Policy Clinic — identical gap-moment structure, same tools.</p>
+    </div>
+  </section>
+
+  <!-- 10 · THE VISION -->
+  <section class="slide deepteal">
+    <div class="inner">
+      <div class="kicker">The vision</div>
+      <p class="quote">"The goal is a clinician who sustains effective judgment, regulation, and care across a
+      multi-decade career — without the slow erosion we've come to accept as inevitable."</p>
+      <p class="lede" style="margin-top:26px">We call it <span class="teal-accent">clinician durability</span>.
+      Not a temperament you're born with — an infrastructure you build, one Gap Moment at a time.</p>
+    </div>
+  </section>
+
+  <!-- 11 · CLOSE -->
+  <section class="slide cover">
+    <div class="inner">
+      <div class="brandmark">Somnistics Research Labs</div>
+      <h1>Gap Moments aren't<br>wasted time.</h1>
+      <p class="lede">They're the frontier of resilience — and we're making them a literacy.</p>
+      <div class="cite" style="margin-top:32px;color:#8FD4CD">pausality.health</div>
+    </div>
+  </section>
+
+</div>
+
+<div class="hint" id="hint">← → to move · space advances · Esc for overview</div>
+<div class="nav left"><button class="navbtn" id="prev" aria-label="Previous">‹</button></div>
+<div class="nav right"><button class="navbtn" id="next" aria-label="Next">›</button></div>
+<div class="dots" id="dots"></div>
+
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+const dotsWrap=document.getElementById('dots');
+const progress=document.getElementById('progress');
+const counter=document.getElementById('counter');
+let idx=0;
+
+slides.forEach((s,i)=>{
+  const b=document.createElement('button');b.className='dot';b.setAttribute('aria-label','Slide '+(i+1));
+  b.onclick=()=>go(i);dotsWrap.appendChild(b);
+});
+const dots=[...dotsWrap.children];
+function isDark(i){return slides[i].classList.contains('cover')||slides[i].classList.contains('deepteal');}
+
+function go(n){
+  n=Math.max(0,Math.min(slides.length-1,n));
+  slides[idx].classList.remove('active');
+  idx=n;
+  slides[idx].classList.add('active');
+  dots.forEach((d,i)=>{d.classList.toggle('on',i===idx);d.classList.toggle('light',isDark(idx));});
+  progress.style.width=(idx/(slides.length-1)*100)+'%';
+  counter.textContent=String(idx+1).padStart(2,'0')+' / '+String(slides.length).padStart(2,'0');
+  counter.style.color=isDark(idx)?'#9FBDB8':'var(--muted)';
+  document.getElementById('prev').disabled=idx===0;
+  document.getElementById('next').disabled=idx===slides.length-1;
+  onEnter(slides[idx]);
+}
+
+function onEnter(slide){
+  slide.querySelectorAll('.num[data-to]').forEach(el=>{
+    if(el.dataset.done)return;el.dataset.done='1';
+    const to=+el.dataset.to, pre=el.dataset.prefix||'', suf=el.dataset.suffix||'';
+    const start=performance.now(), dur=1100;
+    function step(t){
+      const p=Math.min(1,(t-start)/dur), e=1-Math.pow(1-p,3);
+      el.innerHTML=pre+Math.round(to*e)+suf;
+      if(p<1)requestAnimationFrame(step);
+    }requestAnimationFrame(step);
+  });
+  if(slide.dataset.orb){startOrb();}else{stopOrb();}
+}
+
+let orbT=null,orbPhase='out';
+const dOrb=document.getElementById('deckOrb'), dCue=document.getElementById('deckCue');
+function orbStep(){
+  orbPhase=orbPhase==='in'?'out':'in';
+  if(orbPhase==='in'){dOrb.style.transform='scale(1.34)';dCue.textContent='in…';}
+  else{dOrb.style.transform='scale(.62)';dCue.textContent='…and out';}
+  orbT=setTimeout(orbStep,5500);
+}
+function startOrb(){if(orbT)return;orbPhase='out';orbStep();}
+function stopOrb(){clearTimeout(orbT);orbT=null;}
+
+document.getElementById('revealBtn').onclick=function(){
+  this.style.display='none';
+  document.getElementById('revealBox').classList.add('show');
+};
+
+document.getElementById('next').onclick=()=>go(idx+1);
+document.getElementById('prev').onclick=()=>go(idx-1);
+document.addEventListener('keydown',e=>{
+  if(overview){if(e.key==='Escape')toggleOverview();return;}
+  if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'){e.preventDefault();go(idx+1);}
+  else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(idx-1);}
+  else if(e.key==='Home'){go(0);} else if(e.key==='End'){go(slides.length-1);}
+  else if(e.key==='Escape'){toggleOverview();}
+});
+let tx=0;
+document.addEventListener('touchstart',e=>{tx=e.changedTouches[0].clientX;},{passive:true});
+document.addEventListener('touchend',e=>{if(overview)return;const dx=e.changedTouches[0].clientX-tx;
+  if(Math.abs(dx)>50)go(idx+(dx<0?1:-1));},{passive:true});
+
+setTimeout(()=>{const h=document.getElementById('hint');if(h)h.style.opacity='0';},4600);
+
+let overview=false;
+function toggleOverview(){
+  overview=!overview;
+  const deck=document.getElementById('deck');
+  if(overview){
+    stopOrb();
+    deck.style.cssText='position:fixed;inset:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;padding:26px;overflow:auto;background:var(--paper)';
+    slides.forEach((s,i)=>{
+      s.style.cssText='position:relative;inset:auto;opacity:1;visibility:visible;transform:scale(1);'+
+        'height:158px;border-radius:14px;overflow:hidden;cursor:pointer;padding:18px;justify-content:center;'+
+        'box-shadow:var(--shadow);border:2px solid '+(i===idx?'var(--teal)':'transparent')+';pointer-events:auto;transition:none';
+      s.onclick=()=>{toggleOverview();go(i);};
+    });
+  }else{
+    deck.style.cssText='';
+    slides.forEach(s=>{s.style.cssText='';s.onclick=null;s.classList.remove('active');});
+    slides[idx].classList.add('active');onEnter(slides[idx]);
+  }
+}
+
+go(0);
+</script>
+</body>
+</html>

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pausality · The NeuroMinute</title>
+<style>
+  :root{
+    --paper:#F5F1E8; --card:#FFFDF8; --ink:#1F2421; --muted:#6B6A60;
+    --line:#E4DCCB; --teal:#14746F; --teal-deep:#0E5450; --teal-soft:#E6F0EE;
+    --amber:#C6692B; --shadow:0 18px 50px rgba(31,36,33,.10);
+    --serif:Georgia,'Times New Roman',serif;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(120% 90% at 50% 0%,#FBF8F0,var(--paper));
+    color:var(--ink);font-family:var(--sans);line-height:1.55;min-height:100vh}
+  .wrap{max-width:680px;margin:0 auto;padding:34px 22px 70px;text-align:center}
+  .brand{font-family:var(--serif);letter-spacing:.02em;font-size:14px;color:var(--teal-deep);text-transform:uppercase}
+  h1{font-family:var(--serif);font-weight:600;font-size:31px;margin:.25em 0 .1em}
+  h1 .tm{font-size:15px;vertical-align:super;color:var(--muted);font-weight:400}
+  .lede{color:var(--muted);font-size:16px;margin:0 auto 8px;max-width:540px}
+
+  /* state check */
+  .check{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);
+    padding:20px 22px;margin:18px 0;transition:opacity .4s}
+  .check h2{font-family:var(--serif);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--teal-deep);margin:0 0 4px}
+  .check .ck{font-family:var(--serif);font-size:20px;font-weight:600;margin:0 0 6px}
+  .check .hint{color:var(--muted);font-size:14px;margin:0 0 14px}
+  .scalerow{display:flex;gap:7px;justify-content:center;flex-wrap:wrap}
+  .scalerow .opt{flex:1;min-width:44px;max-width:78px;border:1px solid var(--line);background:#fff;border-radius:12px;
+    padding:12px 4px;cursor:pointer;font-size:14px;transition:.14s;font-weight:600;color:var(--ink)}
+  .scalerow .opt:hover{border-color:var(--teal)}
+  .scalerow .opt.sel{background:var(--teal);color:#fff;border-color:var(--teal)}
+  .scaleends{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin-top:7px;padding:0 2px}
+
+  /* pacer */
+  .stage{margin:26px 0 10px;min-height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .orbwrap{width:260px;height:260px;display:flex;align-items:center;justify-content:center;position:relative}
+  .orb{width:96px;height:96px;border-radius:50%;
+    background:radial-gradient(circle at 38% 34%,#3AA6A0,var(--teal) 58%,var(--teal-deep));
+    box-shadow:0 0 0 0 rgba(20,116,111,.12), 0 10px 30px rgba(14,84,80,.28);
+    transform:scale(.62);transition:transform 1s ease-in-out, box-shadow 1s ease-in-out}
+  .orb.reset{transition:transform .8s ease-in-out, box-shadow .8s ease-in-out}
+  .cue{font-family:var(--serif);font-size:23px;color:var(--teal-deep);margin-top:6px;min-height:30px;letter-spacing:.01em}
+  .count{font-size:14px;color:var(--muted);letter-spacing:.10em;text-transform:uppercase;margin-top:4px;min-height:20px}
+
+  .controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:6px}
+  .btn{background:var(--teal);color:#fff;border:none;border-radius:14px;padding:13px 26px;font-size:16px;
+    font-weight:600;cursor:pointer;font-family:var(--sans)}
+  .btn:hover{background:var(--teal-deep)}
+  .btn.ghost{background:#fff;color:var(--teal-deep);border:1px solid var(--line)}
+  .btn[disabled]{opacity:.4;cursor:not-allowed}
+
+  .pace{margin:20px auto 0;max-width:420px;color:var(--muted);font-size:13.5px}
+  .pace input[type=range]{width:100%;accent-color:var(--teal);height:26px}
+  .pace .paceval{font-family:var(--serif);color:var(--teal-deep);font-weight:600}
+
+  /* completion */
+  .done{display:none;background:var(--teal-soft);border:1px solid #CFE3DF;border-radius:18px;padding:22px;margin:18px 0}
+  .done .dh{font-family:var(--serif);font-size:22px;color:var(--teal-deep);font-weight:600;margin:0 0 6px}
+  .done .dp{color:var(--ink);font-size:15px;margin:0}
+
+  .hide{display:none}
+  .foot{color:var(--muted);font-size:12.5px;margin-top:38px;border-top:1px solid var(--line);padding-top:16px;line-height:1.55}
+  .priv{color:var(--teal-deep);font-weight:600}
+  @media (prefers-reduced-motion:reduce){.orb{transition:transform .3s linear, box-shadow .3s linear}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">Pausality · The Gap</div>
+  <h1>The NeuroMinute<span class="tm">™</span></h1>
+  <p class="lede">One minute of paced breath, together. The orb sets the tempo — expand as you breathe
+  in, ease as you breathe out. A single deliberate breath cadence, held for sixty seconds, is enough
+  to move the autonomic needle. Let's feel it.</p>
+
+  <!-- BEFORE -->
+  <div class="check" id="beforeCheck">
+    <h2>Before</h2>
+    <div class="ck">Where are you right now?</div>
+    <p class="hint">One tap — don't overthink it. This is the baseline we'll compare against.</p>
+    <div class="scalerow" id="beforeRow"></div>
+    <div class="scaleends"><span>tense</span><span>settled</span></div>
+  </div>
+
+  <!-- PACER STAGE -->
+  <div class="stage">
+    <div class="orbwrap"><div class="orb" id="orb"></div></div>
+    <div class="cue" id="cue">Ready when you are</div>
+    <div class="count" id="count">60 seconds · ~5.5 breaths per minute</div>
+  </div>
+
+  <div class="controls">
+    <button class="btn" id="start">Begin the NeuroMinute</button>
+    <button class="btn ghost hide" id="stop">Stop</button>
+  </div>
+
+  <div class="pace" id="paceBox">
+    <label for="pace">Breath pace — <span class="paceval" id="paceLabel">5.5s in · 5.5s out</span></label>
+    <input type="range" id="pace" min="4.5" max="6.5" step="0.5" value="5.5">
+    <div class="scaleends"><span>quicker · 4.5s</span><span>slower · 6.5s</span></div>
+  </div>
+
+  <!-- COMPLETION -->
+  <div class="done" id="done">
+    <div class="dh">That was a NeuroMinute.</div>
+    <p class="dp">Nothing to achieve, nothing to fix — you just gave your nervous system a clear signal.
+    Now the honest question: did anything shift?</p>
+  </div>
+
+  <!-- AFTER -->
+  <div class="check hide" id="afterCheck">
+    <h2>After</h2>
+    <div class="ck">And now?</div>
+    <p class="hint">Same tap, same scale. Compare it to where you started.</p>
+    <div class="scalerow" id="afterRow"></div>
+    <div class="scaleends"><span>tense</span><span>settled</span></div>
+    <div id="delta" style="font-family:var(--serif);font-style:italic;color:var(--teal-deep);font-size:16px;margin-top:16px;min-height:22px"></div>
+  </div>
+
+  <div class="foot">
+    <span class="priv">Everything stays on your device. Nothing is sent anywhere.</span><br>
+    The NeuroMinute™ · Pausality · Somnistics Research Labs · pausality.health<br>
+    <span style="font-size:11.5px">Paced breathing near ~5.5 breaths/min (≈0.1&nbsp;Hz) is the
+    resonance frequency at which heart-rate variability is maximized (Lehrer &amp; Gevirtz, 2014;
+    Lehrer et&nbsp;al., 2000). A reflection-and-practice tool, not medical treatment. If you have
+    dizziness, are pregnant, dehydrated, or have a neurovascular condition, breathe normally rather
+    than pacing.</span>
+  </div>
+</div>
+
+<script>
+const SESSION=60;            // seconds
+let pace=5.5;                // seconds per half-breath (in OR out)
+let running=false, tId=null, cId=null, endAt=0, phase='in';
+let before=null, after=null;
+
+/* ---- state-check chips ---- */
+function buildRow(el,onPick){
+  for(let v=1;v<=5;v++){
+    const b=document.createElement('div');b.className='opt';b.textContent=v;
+    b.onclick=()=>{[...el.children].forEach(c=>c.classList.remove('sel'));b.classList.add('sel');onPick(v);};
+    el.appendChild(b);
+  }
+}
+buildRow(document.getElementById('beforeRow'),v=>{before=v;document.getElementById('start').disabled=false;});
+buildRow(document.getElementById('afterRow'),v=>{after=v;showDelta();});
+
+/* ---- pace slider ---- */
+const paceEl=document.getElementById('pace');
+paceEl.oninput=()=>{
+  pace=+paceEl.value;
+  document.getElementById('paceLabel').textContent=`${pace}s in · ${pace}s out`;
+  const bpm=(60/(pace*2)).toFixed(1);
+  if(!running)document.getElementById('count').textContent=`60 seconds · ~${bpm} breaths per minute`;
+};
+
+const orb=document.getElementById('orb');
+const cue=document.getElementById('cue');
+const count=document.getElementById('count');
+
+function setPhase(p){
+  phase=p;
+  orb.classList.remove('reset');
+  orb.style.transitionDuration=pace+'s';
+  if(p==='in'){
+    cue.textContent='Breathe in…';
+    orb.style.transform='scale(1.32)';
+    orb.style.boxShadow='0 0 0 30px rgba(20,116,111,.05), 0 14px 36px rgba(14,84,80,.30)';
+  }else{
+    cue.textContent='…and out';
+    orb.style.transform='scale(.62)';
+    orb.style.boxShadow='0 0 0 0 rgba(20,116,111,.12), 0 10px 30px rgba(14,84,80,.26)';
+  }
+}
+
+function start(){
+  if(running)return;
+  running=true;
+  document.getElementById('start').classList.add('hide');
+  document.getElementById('stop').classList.remove('hide');
+  document.getElementById('done').style.display='none';
+  document.getElementById('afterCheck').classList.add('hide');
+  document.getElementById('beforeCheck').style.opacity='.5';
+  endAt=performanceNow()+SESSION*1000;
+  setPhase('in');
+  tick();
+  loopBreath();
+}
+
+function loopBreath(){
+  tId=setTimeout(()=>{
+    if(!running)return;
+    setPhase(phase==='in'?'out':'in');
+    loopBreath();
+  }, pace*1000);
+}
+
+function tick(){
+  const rem=Math.max(0,Math.round((endAt-performanceNow())/1000));
+  count.textContent=rem>0?`${rem} seconds left`:'0 seconds left';
+  if(rem<=0){finish();return;}
+  cId=setTimeout(tick,250);
+}
+
+function finish(){
+  running=false;
+  clearTimeout(tId);clearTimeout(cId);
+  orb.classList.add('reset');
+  orb.style.transitionDuration='';
+  orb.style.transform='scale(.9)';
+  orb.style.boxShadow='0 0 0 14px rgba(20,116,111,.05), 0 10px 30px rgba(14,84,80,.24)';
+  cue.textContent='Complete';
+  count.textContent='';
+  document.getElementById('stop').classList.add('hide');
+  const s=document.getElementById('start');
+  s.classList.remove('hide');s.textContent='Take another minute';
+  document.getElementById('done').style.display='block';
+  const ac=document.getElementById('afterCheck');
+  ac.classList.remove('hide');
+  ac.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+function stop(){
+  running=false;
+  clearTimeout(tId);clearTimeout(cId);
+  orb.classList.add('reset');
+  orb.style.transitionDuration='';
+  orb.style.transform='scale(.62)';
+  cue.textContent='Paused';
+  paceEl.oninput();
+  document.getElementById('stop').classList.add('hide');
+  const s=document.getElementById('start');
+  s.classList.remove('hide');s.textContent='Begin the NeuroMinute';
+  document.getElementById('beforeCheck').style.opacity='1';
+}
+
+function showDelta(){
+  if(before==null||after==null)return;
+  const d=after-before;
+  const el=document.getElementById('delta');
+  let msg;
+  if(d>0)msg=`You moved ${d} step${d>1?'s':''} toward settled — in one minute, without changing anything but your breath.`;
+  else if(d===0)msg='You landed in the same place — steadiness is its own kind of result. Notice it counted.';
+  else msg='You read yourself as a touch more activated — worth being curious about, not fixing. The noticing is the skill.';
+  el.textContent=msg;
+}
+
+/* monotonic clock without Date.now/performance.now name collisions */
+function performanceNow(){return performance.now();}
+
+document.getElementById('start').disabled=true;
+document.getElementById('start').onclick=start;
+document.getElementById('stop').onclick=stop;
+paceEl.oninput();
+</script>
+</body>
+</html>

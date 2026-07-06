@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pausality · Diaphragmatic Check</title>
+<style>
+  :root{
+    --paper:#F5F1E8; --card:#FFFDF8; --ink:#1F2421; --muted:#6B6A60;
+    --line:#E4DCCB; --teal:#14746F; --teal-deep:#0E5450; --teal-soft:#E6F0EE;
+    --amber:#C6692B; --shadow:0 10px 30px rgba(31,36,33,.07);
+    --serif:Georgia,'Times New Roman',serif;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);
+    line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:760px;margin:0 auto;padding:34px 22px 80px}
+  .brand{font-family:var(--serif);letter-spacing:.02em;font-size:14px;color:var(--teal-deep);text-transform:uppercase}
+  h1{font-family:var(--serif);font-weight:600;font-size:30px;margin:.25em 0 .15em;line-height:1.15}
+  .lede{color:var(--muted);font-size:16px;margin:0 0 8px}
+  .step{background:var(--card);border:1px solid var(--line);border-radius:18px;
+    box-shadow:var(--shadow);padding:22px;margin:18px 0}
+  .step h2{font-family:var(--serif);font-size:13px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--teal-deep);margin:0 0 4px}
+  .step h3{font-family:var(--serif);font-size:21px;margin:0 0 12px;font-weight:600}
+  .hint{color:var(--muted);font-size:14.5px;margin:-4px 0 14px}
+  .proto{background:var(--teal-soft);border-radius:12px;padding:14px 16px;font-size:14.5px;margin:12px 0}
+  .proto b{color:var(--teal-deep)}
+  .proto ol{margin:8px 0 2px;padding-left:20px}
+  .proto li{margin:5px 0}
+  .mathbig{font-family:var(--serif);font-size:30px;font-weight:600;color:var(--amber);text-align:center;margin:6px 0}
+  .choices{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+  .choice{border:1px solid var(--line);background:#fff;border-radius:12px;padding:13px 16px;cursor:pointer;
+    font-size:15px;transition:.15s;display:flex;align-items:center;gap:10px}
+  .choice:hover{border-color:var(--teal)}
+  .choice.sel{background:var(--teal);color:#fff;border-color:var(--teal)}
+  .choice .k{font-family:var(--serif);font-weight:600;opacity:.85;min-width:20px}
+  .btn{background:var(--teal);color:#fff;border:none;border-radius:12px;padding:12px 22px;
+    font-size:15px;font-weight:600;cursor:pointer;font-family:var(--sans)}
+  .btn:hover{background:var(--teal-deep)}
+  .btn[disabled]{opacity:.4;cursor:not-allowed}
+  .btn.ghost{background:#fff;color:var(--teal-deep);border:1px solid var(--line)}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:16px}
+  /* reveal */
+  .reveal{border-left:3px solid var(--amber)}
+  .stat{font-family:var(--serif);font-size:15px;line-height:1.5;margin:0 0 10px}
+  .stat .big{color:var(--amber);font-size:20px;font-weight:600}
+  .verdict{font-family:var(--serif);font-size:18px;color:var(--teal-deep);font-weight:600;margin:14px 0 6px}
+  /* capture */
+  .capture{border-left:3px solid var(--teal);background:var(--card);border-radius:10px;
+    padding:12px 16px;margin:10px 0;box-shadow:var(--shadow)}
+  .capture .ce{font-family:var(--serif);font-size:16px}
+  .capture .cmeta{color:var(--muted);font-size:13.5px;margin-top:3px}
+  .hide{display:none}
+  .foot{color:var(--muted);font-size:12.5px;margin-top:40px;border-top:1px solid var(--line);
+    padding-top:16px;line-height:1.5}
+  .priv{color:var(--teal-deep);font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">Pausality · The Gap</div>
+  <h1>The Diaphragmatic Check</h1>
+  <p class="lede">A 90-second self-test built on a finding from the OR: most experienced anesthesia
+  clinicians have lost conscious contact with the one muscle they manage all day. Let's find out where
+  you stand — one hand on your chest, one on your belly.</p>
+
+  <!-- STEP 1 -->
+  <div class="step" id="s1">
+    <h2>Step 1 · At rest</h2><h3>Set your hands, then breathe normally.</h3>
+    <div class="proto">
+      <b>The protocol:</b>
+      <ol>
+        <li>One palm flat on your <b>upper chest</b>, one palm flat on your <b>belly</b>, just above the navel.</li>
+        <li>Breathe the way you always do — don't perform it. Take <b>three easy breaths.</b></li>
+        <li>Feel which hand travels more.</li>
+      </ol>
+    </div>
+    <p class="hint">Which hand moved more?</p>
+    <div class="choices" id="c1"></div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step hide" id="s2">
+    <h2>Step 2 · Under load</h2><h3>Now add a little cognitive pressure.</h3>
+    <p class="hint">Keep your hands exactly where they are. Solve this in your head while you keep
+    breathing — no pausing your breath to think:</p>
+    <div class="mathbig" id="mathq">Count down from 100 by 7s — out loud, as fast as you can.</div>
+    <p class="hint">Do it for a full three breaths. This is the OR twist: a task steals your attention,
+    and your breath quietly changes without you. <b>Now — which hand moved more?</b></p>
+    <div class="choices" id="c2"></div>
+  </div>
+
+  <!-- REVEAL -->
+  <div class="step reveal hide" id="s3">
+    <h2>What you just found</h2>
+    <h3 id="verdictH">Diaphragmatic blindness</h3>
+    <p class="stat">In an informal test of <span class="big">30 anesthesia professionals</span> on
+    their breaks, <span class="big">28 could not engage the diaphragm on command</span> — they breathed
+    with accessory muscles (scalenes, sternocleidomastoid, upper intercostals) instead. The two who could?
+    A singer and a trumpet player.</p>
+    <p class="stat">It isn't a fitness problem. The diaphragm runs on brainstem autopilot through the
+    phrenic nerve from your first breath, so it has almost no voluntary cortical map — until you build one.
+    With 30 seconds of coaching, all 30 clinicians reached a 10-second diaphragmatic inhale. The capacity
+    was always there; the <em>awareness</em> wasn't.</p>
+    <div class="verdict" id="yourResult"></div>
+    <p class="hint" id="resultDetail"></p>
+    <div class="row">
+      <button class="btn" id="toReteach">Show me the 30-second re-teach</button>
+    </div>
+  </div>
+
+  <!-- RE-TEACH -->
+  <div class="step hide" id="s4">
+    <h2>Step 3 · The 30-second re-teach</h2><h3>Find the diaphragm on purpose.</h3>
+    <div class="proto">
+      <ol>
+        <li>Keep the belly hand on. <b>Let the chest hand stay still</b> — that's the goal, a quiet chest.</li>
+        <li>Inhale slowly through the nose and aim the air <b>low</b> — imagine sending it under the
+        belly hand so that hand rises <b>first</b>.</li>
+        <li>Let the belly gently push your hand out on the inhale; let it fall on the exhale. Chest last,
+        not first.</li>
+        <li>Try one slow nasal inhale toward <b>8–10 seconds</b>. Certified diaphragmatic breathing
+        runs 8+ seconds; accessory-only breathing tops out around 4–5.</li>
+      </ol>
+    </div>
+    <p class="hint">Awareness before technique: you cannot train a breath pattern you cannot feel. That's
+    the whole reason this check comes first.</p>
+    <div class="row">
+      <button class="btn" id="save">Save my result</button>
+      <button class="btn ghost" id="reset">Start over</button>
+    </div>
+  </div>
+
+  <!-- LOG -->
+  <div class="step hide" id="logStep">
+    <h2>Your result</h2><h3>Diaphragmatic Check</h3>
+    <div id="log"></div>
+    <div class="row">
+      <button class="btn ghost" id="copy">Copy summary</button>
+      <span id="copied" style="color:var(--teal-deep);font-size:14px"></span>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span class="priv">Everything stays on your device. Nothing is sent anywhere.</span><br>
+    Pausality · Somnistics Research Labs · pausality.health — a reflection tool, not a diagnosis.<br>
+    <span style="font-size:11.5px">Finding from an informal clinical survey of 30 anesthesia
+    professionals (Graybeal, 2026). Mechanism per Kerr et&nbsp;al. (2013) on somatosensory cortical
+    representation and attentional allocation to the body. Not a pulmonary function test.</span>
+  </div>
+</div>
+
+<script>
+const REST_OPTS=[
+  {k:'A',v:'chest',t:'My chest hand moved more'},
+  {k:'B',v:'belly',t:'My belly hand moved more'},
+  {k:'C',v:'both',t:'Both moved about the same'},
+  {k:'D',v:'unsure',t:'Honestly, I can barely tell'},
+];
+const LOAD_OPTS=[
+  {k:'A',v:'chest',t:'Chest took over — it moved more under load'},
+  {k:'B',v:'belly',t:'Belly stayed in charge'},
+  {k:'C',v:'shift',t:'It shifted upward toward my chest / got shallower'},
+  {k:'D',v:'unsure',t:'I lost track of my breath entirely while doing the math'},
+];
+
+const state={rest:null,load:null};
+
+function buildChoices(host,opts,onPick){
+  host.innerHTML='';
+  opts.forEach(o=>{
+    const d=document.createElement('div');d.className='choice';
+    d.innerHTML=`<span class="k">${o.k}</span><span>${o.t}</span>`;
+    d.onclick=()=>{[...host.children].forEach(c=>c.classList.remove('sel'));d.classList.add('sel');onPick(o.v);};
+    host.appendChild(d);
+  });
+}
+
+buildChoices(document.getElementById('c1'),REST_OPTS,v=>{
+  state.rest=v;
+  const s2=document.getElementById('s2');s2.classList.remove('hide');
+  s2.scrollIntoView({behavior:'smooth',block:'start'});
+});
+buildChoices(document.getElementById('c2'),LOAD_OPTS,v=>{
+  state.load=v;
+  reveal();
+});
+
+function reveal(){
+  // "blindness" = anything other than clean belly-dominant at rest AND held under load
+  const restOk = state.rest==='belly';
+  const loadOk = state.load==='belly';
+  const s3=document.getElementById('s3');
+  const rEl=document.getElementById('yourResult');
+  const dEl=document.getElementById('resultDetail');
+  const vH=document.getElementById('verdictH');
+
+  if(restOk && loadOk){
+    vH.textContent='Diaphragmatic literacy — the rare case';
+    rEl.textContent='Your result: belly-led at rest and it held under load.';
+    dEl.textContent='You are in the minority who kept diaphragmatic control while the mind was busy — the singer/trumpet-player profile. Worth protecting: the skill degrades quietly if it stops being trained.';
+  } else if(restOk && !loadOk){
+    vH.textContent='Diaphragmatic blindness — the load-triggered kind';
+    rEl.textContent='Your result: belly-led at rest, but it slipped the moment attention was taxed.';
+    dEl.textContent='This is the most clinically important pattern: your breath is fine until you get busy — exactly when a patient needs you steady. The breath you have at rest is not the breath you have mid-case.';
+  } else if(!restOk && loadOk){
+    vH.textContent='Mixed signal';
+    rEl.textContent='Your result: chest-led at rest, but belly under load.';
+    dEl.textContent='Uncommon — often it means the resting read was hard to feel. The re-teach will sharpen the signal so you can trust what you sense.';
+  } else {
+    vH.textContent='Diaphragmatic blindness — the common case';
+    rEl.textContent='Your result: chest-dominant or hard to read — at rest and under load.';
+    dEl.textContent='You are with the 28 out of 30. This is not a flaw; it is an untrained cortical map. The good news is that it responds fast — literally within a coached minute.';
+  }
+  s3.classList.remove('hide');
+  s3.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+document.getElementById('toReteach').onclick=()=>{
+  const s4=document.getElementById('s4');s4.classList.remove('hide');
+  s4.scrollIntoView({behavior:'smooth',block:'start'});
+};
+
+function label(v,map){return map[v]||v;}
+const RESTMAP={chest:'chest-dominant',belly:'belly (diaphragmatic)',both:'chest & belly equal',unsure:'hard to tell'};
+const LOADMAP={chest:'chest took over',belly:'held diaphragmatic',shift:'shifted upward / shallower',unsure:'lost track under load'};
+
+document.getElementById('save').onclick=()=>{
+  const blind = !(state.rest==='belly' && state.load==='belly');
+  document.getElementById('log').innerHTML=
+    `<div class="capture"><div class="ce">At rest: ${RESTMAP[state.rest]} · Under load: ${LOADMAP[state.load]}</div>
+     <div class="cmeta">${blind?'Pattern consistent with diaphragmatic blindness — a trainable, near-universal starting point (28/30 clinicians).':'Diaphragmatic control held under load — the rare, trained profile.'}</div></div>`;
+  const ls=document.getElementById('logStep');ls.classList.remove('hide');
+  ls.scrollIntoView({behavior:'smooth',block:'start'});
+};
+
+document.getElementById('reset').onclick=()=>{
+  state.rest=null;state.load=null;
+  ['s2','s3','s4','logStep'].forEach(id=>document.getElementById(id).classList.add('hide'));
+  document.querySelectorAll('.choice').forEach(c=>c.classList.remove('sel'));
+  window.scrollTo({top:0,behavior:'smooth'});
+};
+
+document.getElementById('copy').onclick=()=>{
+  const blind = !(state.rest==='belly' && state.load==='belly');
+  const txt='Pausality · Diaphragmatic Check\n\n'+
+    `At rest: ${RESTMAP[state.rest]}\n`+
+    `Under cognitive load: ${LOADMAP[state.load]}\n\n`+
+    (blind
+      ? 'Pattern: diaphragmatic blindness — the common, trainable starting point. In an informal test, 28 of 30 anesthesia professionals could not engage the diaphragm on command; all 30 reached a 10-second diaphragmatic inhale after ~30 seconds of coaching.'
+      : 'Pattern: diaphragmatic control held under load — the rare, trained profile.')+
+    '\n\nRe-teach: quiet chest, slow nasal inhale aimed low, belly hand rises first, build toward an 8–10s inhale.';
+  navigator.clipboard.writeText(txt).then(()=>{
+    document.getElementById('copied').textContent='Copied ✓';
+    setTimeout(()=>document.getElementById('copied').textContent='',2500);
+  },()=>{document.getElementById('copied').textContent='Select & copy above';});
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pausality · Gap Moment Audit</title>
+<style>
+  :root{
+    --paper:#F5F1E8; --card:#FFFDF8; --ink:#1F2421; --muted:#6B6A60;
+    --line:#E4DCCB; --teal:#14746F; --teal-deep:#0E5450; --teal-soft:#E6F0EE;
+    --amber:#C6692B; --shadow:0 10px 30px rgba(31,36,33,.07);
+    --serif:Georgia,'Times New Roman',serif;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);
+    line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:780px;margin:0 auto;padding:34px 22px 80px}
+  .brand{font-family:var(--serif);letter-spacing:.02em;font-size:14px;color:var(--teal-deep);text-transform:uppercase}
+  h1{font-family:var(--serif);font-weight:600;font-size:30px;margin:.25em 0 .15em;line-height:1.15}
+  h1 .tm{font-size:14px;vertical-align:super;color:var(--muted);font-weight:400}
+  .lede{color:var(--muted);font-size:16px;margin:0 0 8px;max-width:620px}
+  .note{font-size:13.5px;color:var(--muted);background:#fff;border:1px dashed var(--line);
+    border-radius:12px;padding:12px 14px;margin:14px 0}
+  .note b{color:var(--teal-deep)}
+  .grp h2{font-family:var(--serif);font-size:13px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--teal-deep);margin:26px 0 2px}
+  .grp p.gd{color:var(--muted);font-size:13.5px;margin:0 0 8px}
+  .moment{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;
+    margin:10px 0;box-shadow:var(--shadow)}
+  .moment.on{border-color:var(--teal)}
+  .mhead{display:flex;align-items:flex-start;gap:12px}
+  .mcheck{width:22px;height:22px;flex:0 0 22px;border:1.5px solid var(--line);border-radius:7px;cursor:pointer;
+    margin-top:2px;display:flex;align-items:center;justify-content:center;transition:.14s}
+  .mcheck.on{background:var(--teal);border-color:var(--teal)}
+  .mcheck.on::after{content:'✓';color:#fff;font-size:14px;font-weight:700}
+  .mbody{flex:1}
+  .mname{font-family:var(--serif);font-size:17px;font-weight:600;cursor:pointer}
+  .mdesc{color:var(--muted);font-size:13.5px;margin-top:2px}
+  .mspike{margin-top:12px;display:none}
+  .moment.on .mspike{display:block}
+  .spikelab{font-size:12.5px;color:var(--muted);display:flex;justify-content:space-between;margin-bottom:4px}
+  .segs{display:flex;gap:6px}
+  .seg{flex:1;text-align:center;border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px 0;
+    cursor:pointer;font-size:14px;font-weight:600;transition:.12s}
+  .seg:hover{border-color:var(--teal)}
+  .seg.sel{background:var(--amber);color:#fff;border-color:var(--amber)}
+  .flagrow{margin-top:10px;display:none}
+  .moment.on .flagrow{display:flex;align-items:center;gap:8px}
+  .flagbtn{font-size:13px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 14px;
+    cursor:pointer;color:var(--teal-deep);font-weight:600;transition:.14s}
+  .flagbtn.on{background:var(--teal);color:#fff;border-color:var(--teal)}
+  .flagbtn.on::before{content:'★ '}
+  .custom{display:flex;gap:8px;margin-top:10px}
+  .custom input{flex:1;border:1px solid var(--line);border-radius:10px;padding:10px 12px;
+    font-family:var(--sans);font-size:15px;background:#fff}
+  .btn{background:var(--teal);color:#fff;border:none;border-radius:12px;padding:12px 22px;
+    font-size:15px;font-weight:600;cursor:pointer;font-family:var(--sans)}
+  .btn:hover{background:var(--teal-deep)}
+  .btn.ghost{background:#fff;color:var(--teal-deep);border:1px solid var(--line)}
+  .actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:26px}
+  #counts{color:var(--muted);font-size:14px}
+  /* summary */
+  #results{margin-top:28px;display:none}
+  .sumcard{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);
+    padding:22px}
+  .sumcard h3{font-family:var(--serif);font-size:22px;font-weight:600;margin:0 0 4px}
+  .capture{border-left:3px solid var(--teal);background:#fff;border-radius:10px;padding:11px 15px;margin:9px 0}
+  .capture.star{border-left-color:var(--amber)}
+  .capture .ce{font-family:var(--serif);font-size:16px}
+  .capture .ca{color:var(--amber);font-weight:600;font-size:14px}
+  .capture .cmeta{color:var(--muted);font-size:13px;margin-top:2px}
+  .prescription{font-family:var(--serif);font-style:italic;color:var(--teal-deep);font-size:16px;margin:16px 0 4px}
+  .foot{color:var(--muted);font-size:12.5px;margin-top:40px;border-top:1px solid var(--line);
+    padding-top:16px;line-height:1.5}
+  .priv{color:var(--teal-deep);font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">Pausality · The Gap</div>
+  <h1>The Gap Moment Audit<span class="tm">™</span></h1>
+  <p class="lede">A typical CRNA shift holds <b>30–40 natural transitions</b> — small seams between one
+  thing and the next. Most pass unused. A few are quietly expensive. This is a map of your shift: mark
+  the transitions you recognize, rate the spike, and flag two or three to train. Take it home.</p>
+
+  <div class="note"><b>The reframe:</b> a Gap Moment isn't downtime to fill — it's a rep you already own.
+  You're not adding a practice to your day; you're making conscious a moment that's already there. The
+  post-induction, pre-incision seam — 30 to 60 seconds after the patient goes under and before the
+  surgeon begins — is the one only decades in the room teach you to see.</p>
+
+  <div id="menu"></div>
+
+  <div class="grp">
+    <h2>Your own</h2>
+    <p class="gd">A transition we didn't name that spikes you. Add up to three.</p>
+    <div id="customList"></div>
+    <div class="custom">
+      <input type="text" id="customIn" placeholder="e.g. the phone call from the charge nurse…" maxlength="70">
+      <button class="btn ghost" id="addCustom" type="button">Add</button>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn" id="build" type="button">Build my take-home map</button>
+    <span id="counts">0 marked · 0 flagged to train</span>
+  </div>
+
+  <div id="results">
+    <div class="sumcard">
+      <h3>Your Gap Moment map</h3>
+      <p style="color:var(--muted);font-size:14px;margin:2px 0 14px">Ranked by the spike you gave it.
+      Starred moments are the two or three you chose to train first.</p>
+      <div id="sumlog"></div>
+      <p class="prescription" id="rx"></p>
+      <div class="actions" style="margin-top:14px">
+        <button class="btn ghost" id="copy" type="button">Copy summary</button>
+        <span id="copied" style="color:var(--teal-deep);font-size:14px"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span class="priv">Everything stays on your device. Nothing is sent anywhere.</span><br>
+    The Gap Moment Audit™ · Pausality · Somnistics Research Labs · pausality.health<br>
+    <span style="font-size:11.5px">Gap Moment Training™ reframes the 30–40 daily clinical transitions as
+    the training surface for autonomic regulation (Graybeal, 2026). A 60-second paced breath at that seam
+    is enough to move heart-rate variability (Lehrer et&nbsp;al., 2000). Reflection tool, not clinical protocol.</span>
+  </div>
+</div>
+
+<script>
+const MENU=[
+  {g:'Front of the case',gd:'The ramp-up, where anticipation lives.',items:[
+    {id:'preop',n:'Pre-op interview',d:'First contact — reading the patient, the chart, the room.'},
+    {id:'walk',n:'The walk to the OR',d:'The corridor between the desk and the table.'},
+    {id:'induction',n:'Induction',d:'Pushing drugs, managing the airway, the crossing.'},
+    {id:'postind',n:'Post-induction → pre-incision',d:'The 30–60s seam after they’re under, before the surgeon starts. The signature window.'},
+  ]},
+  {g:'Middle & maintenance',gd:'The long stretch, where vigilance can drift or grind.',items:[
+    {id:'maint',n:'Induction → maintenance handover',d:'Settling into the steady state, letting the shoulders down.'},
+    {id:'incident',n:'After a critical incident',d:'The minutes after something went sideways.'},
+    {id:'turnover',n:'Room turnover',d:'Between cases — reset, or just refuel and go again?'},
+    {id:'handoff',n:'Hand-off / relief',d:'Giving or taking report; the baton pass.'},
+  ]},
+  {g:'Edges of the shift',gd:'The transitions in and out of the clinical self.',items:[
+    {id:'emergence',n:'Emergence',d:'Waking them up, the last watchful stretch.'},
+    {id:'break',n:'First break',d:'The one you finally get — and how you spend it.'},
+    {id:'drive',n:'The drive home',d:'Decompression, or rumination on repeat?'},
+  ]},
+];
+
+const state={}; // id -> {name, desc, spike, flagged}
+const customs=[]; // {id,name,spike,flagged}
+
+const menuEl=document.getElementById('menu');
+MENU.forEach(group=>{
+  const g=document.createElement('div');g.className='grp';
+  g.innerHTML=`<h2>${group.g}</h2><p class="gd">${group.gd}</p>`;
+  group.items.forEach(it=>g.appendChild(makeMoment(it)));
+  menuEl.appendChild(g);
+});
+
+function makeMoment(it){
+  const wrap=document.createElement('div');wrap.className='moment';wrap.dataset.id=it.id;
+  wrap.innerHTML=`
+    <div class="mhead">
+      <div class="mcheck"></div>
+      <div class="mbody">
+        <div class="mname">${it.n}</div>
+        <div class="mdesc">${it.d}</div>
+        <div class="mspike">
+          <div class="spikelab"><span>stress spike</span><span class="spikev">—</span></div>
+          <div class="segs">${[1,2,3,4,5].map(v=>`<div class="seg" data-v="${v}">${v}</div>`).join('')}</div>
+          <div class="spikelab" style="margin-top:4px"><span>1 · barely a ripple</span><span>5 · full spike</span></div>
+        </div>
+        <div class="flagrow">
+          <span style="font-size:13px;color:var(--muted)">Train this one?</span>
+          <button class="flagbtn" type="button">Flag as a Gap Moment</button>
+        </div>
+      </div>
+    </div>`;
+  const check=wrap.querySelector('.mcheck');
+  const toggle=()=>{
+    const on=wrap.classList.toggle('on');check.classList.toggle('on',on);
+    if(on){state[it.id]={name:it.n,desc:it.d,spike:null,flagged:false};}
+    else{delete state[it.id];
+      wrap.querySelectorAll('.seg').forEach(s=>s.classList.remove('sel'));
+      wrap.querySelector('.spikev').textContent='—';
+      wrap.querySelector('.flagbtn').classList.remove('on');
+      wrap.querySelector('.flagbtn').textContent='Flag as a Gap Moment';}
+    updateCounts();
+  };
+  check.onclick=toggle;
+  wrap.querySelector('.mname').onclick=()=>{if(!wrap.classList.contains('on'))toggle();};
+  wrap.querySelectorAll('.seg').forEach(seg=>{
+    seg.onclick=()=>{
+      if(!wrap.classList.contains('on'))toggle();
+      wrap.querySelectorAll('.seg').forEach(s=>s.classList.remove('sel'));
+      seg.classList.add('sel');
+      wrap.querySelector('.spikev').textContent=seg.dataset.v+' / 5';
+      if(state[it.id])state[it.id].spike=+seg.dataset.v;
+      updateCounts();
+    };
+  });
+  const fb=wrap.querySelector('.flagbtn');
+  fb.onclick=()=>{
+    if(!state[it.id])return;
+    const on=fb.classList.toggle('on');
+    state[it.id].flagged=on;
+    fb.textContent=on?'Flagged to train':'Flag as a Gap Moment';
+    updateCounts();
+  };
+  return wrap;
+}
+
+/* custom moments */
+document.getElementById('addCustom').onclick=addCustom;
+document.getElementById('customIn').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addCustom();}});
+function addCustom(){
+  const inp=document.getElementById('customIn');
+  const name=inp.value.trim();
+  if(!name||customs.length>=3)return;
+  const id='custom-'+customs.length;
+  const obj={id,name,spike:null,flagged:false};customs.push(obj);
+  const wrap=document.createElement('div');wrap.className='moment on';
+  wrap.innerHTML=`
+    <div class="mhead">
+      <div class="mcheck on"></div>
+      <div class="mbody">
+        <div class="mname">${name.replace(/</g,'&lt;')}</div>
+        <div class="mdesc">your own transition</div>
+        <div class="mspike" style="display:block">
+          <div class="spikelab"><span>stress spike</span><span class="spikev">—</span></div>
+          <div class="segs">${[1,2,3,4,5].map(v=>`<div class="seg" data-v="${v}">${v}</div>`).join('')}</div>
+        </div>
+        <div class="flagrow" style="display:flex">
+          <span style="font-size:13px;color:var(--muted)">Train this one?</span>
+          <button class="flagbtn" type="button">Flag as a Gap Moment</button>
+        </div>
+      </div>
+    </div>`;
+  wrap.querySelectorAll('.seg').forEach(seg=>{
+    seg.onclick=()=>{wrap.querySelectorAll('.seg').forEach(s=>s.classList.remove('sel'));
+      seg.classList.add('sel');wrap.querySelector('.spikev').textContent=seg.dataset.v+' / 5';
+      obj.spike=+seg.dataset.v;updateCounts();};
+  });
+  const fb=wrap.querySelector('.flagbtn');
+  fb.onclick=()=>{const on=fb.classList.toggle('on');obj.flagged=on;
+    fb.textContent=on?'Flagged to train':'Flag as a Gap Moment';updateCounts();};
+  document.getElementById('customList').appendChild(wrap);
+  inp.value='';
+  if(customs.length>=3){document.getElementById('addCustom').disabled=true;inp.placeholder='three is plenty';}
+  updateCounts();
+}
+
+function allMarked(){return [...Object.values(state),...customs];}
+function updateCounts(){
+  const marked=allMarked();
+  const flagged=marked.filter(m=>m.flagged).length;
+  document.getElementById('counts').textContent=`${marked.length} marked · ${flagged} flagged to train`;
+}
+
+document.getElementById('build').onclick=()=>{
+  const marked=allMarked().filter(Boolean);
+  if(!marked.length){document.getElementById('counts').textContent='Mark at least one transition to build your map.';return;}
+  const ranked=[...marked].sort((a,b)=>(b.spike||0)-(a.spike||0));
+  document.getElementById('sumlog').innerHTML=ranked.map(m=>{
+    const star=m.flagged;
+    return `<div class="capture${star?' star':''}"><div class="ce">${star?'★ ':''}${(m.name||'').replace(/</g,'&lt;')}
+      <span class="ca">· spike ${m.spike?m.spike+'/5':'—'}</span></div>
+      <div class="cmeta">${star?'flagged to train first':'noticed'}</div></div>`;
+  }).join('');
+  const flags=marked.filter(m=>m.flagged);
+  const rx=document.getElementById('rx');
+  if(flags.length){
+    const names=flags.map(f=>f.name).join(', ');
+    rx.textContent=`Your prescription: one NeuroMinute at ${flags.length===1?'this seam':'these seams'} — ${names}. Same moment, every shift. That's Gap Moment Training.`;
+  }else{
+    rx.textContent='You mapped the terrain — now flag two or three to actually train. A Gap Moment only becomes a rep when you choose it on purpose.';
+  }
+  const r=document.getElementById('results');r.style.display='block';
+  r.scrollIntoView({behavior:'smooth',block:'start'});
+};
+
+document.getElementById('copy').onclick=()=>{
+  const marked=allMarked().filter(Boolean);
+  const ranked=[...marked].sort((a,b)=>(b.spike||0)-(a.spike||0));
+  const flags=ranked.filter(m=>m.flagged);
+  const txt='Pausality · Gap Moment Audit — my shift map\n\n'+
+    ranked.map(m=>`${m.flagged?'★':'•'} ${m.name} — spike ${m.spike?m.spike+'/5':'—'}`).join('\n')+
+    '\n\nFlagged to train first:\n'+
+    (flags.length?flags.map(f=>`  ★ ${f.name}`).join('\n'):'  (none yet — pick 2–3)')+
+    '\n\nPractice: one 60-second NeuroMinute at each flagged seam, same moment every shift.';
+  navigator.clipboard.writeText(txt).then(()=>{
+    document.getElementById('copied').textContent='Copied ✓';
+    setTimeout(()=>document.getElementById('copied').textContent='',2500);
+  },()=>{document.getElementById('copied').textContent='Select & copy above';});
+};
+updateCounts();
+</script>
+</body>
+</html>
