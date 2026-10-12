@@ -42,12 +42,10 @@
   .btn[disabled]{opacity:.4;cursor:not-allowed}
   .btn.ghost{background:#fff;color:var(--teal-deep);border:1px solid var(--line)}
   .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:16px}
-  /* reveal */
   .reveal{border-left:3px solid var(--amber)}
   .stat{font-family:var(--serif);font-size:15px;line-height:1.5;margin:0 0 10px}
   .stat .big{color:var(--amber);font-size:20px;font-weight:600}
   .verdict{font-family:var(--serif);font-size:18px;color:var(--teal-deep);font-weight:600;margin:14px 0 6px}
-  /* capture */
   .capture{border-left:3px solid var(--teal);background:var(--card);border-radius:10px;
     padding:12px 16px;margin:10px 0;box-shadow:var(--shadow)}
   .capture .ce{font-family:var(--serif);font-size:16px}
@@ -65,8 +63,6 @@
   <p class="lede">A 90-second self-test built on a finding from the OR: most experienced anesthesia
   clinicians have lost conscious contact with the one muscle they manage all day. Let's find out where
   you stand — one hand on your chest, one on your belly.</p>
-
-  <!-- STEP 1 -->
   <div class="step" id="s1">
     <h2>Step 1 · At rest</h2><h3>Set your hands, then breathe normally.</h3>
     <div class="proto">
@@ -80,8 +76,6 @@
     <p class="hint">Which hand moved more?</p>
     <div class="choices" id="c1"></div>
   </div>
-
-  <!-- STEP 2 -->
   <div class="step hide" id="s2">
     <h2>Step 2 · Under load</h2><h3>Now add a little cognitive pressure.</h3>
     <p class="hint">Keep your hands exactly where they are. Solve this in your head while you keep
@@ -91,8 +85,6 @@
     and your breath quietly changes without you. <b>Now — which hand moved more?</b></p>
     <div class="choices" id="c2"></div>
   </div>
-
-  <!-- REVEAL -->
   <div class="step reveal hide" id="s3">
     <h2>What you just found</h2>
     <h3 id="verdictH">Diaphragmatic blindness</h3>
@@ -110,8 +102,6 @@
       <button class="btn" id="toReteach">Show me the 30-second re-teach</button>
     </div>
   </div>
-
-  <!-- RE-TEACH -->
   <div class="step hide" id="s4">
     <h2>Step 3 · The 30-second re-teach</h2><h3>Find the diaphragm on purpose.</h3>
     <div class="proto">
@@ -132,8 +122,6 @@
       <button class="btn ghost" id="reset">Start over</button>
     </div>
   </div>
-
-  <!-- LOG -->
   <div class="step hide" id="logStep">
     <h2>Your result</h2><h3>Diaphragmatic Check</h3>
     <div id="log"></div>
@@ -142,7 +130,6 @@
       <span id="copied" style="color:var(--teal-deep);font-size:14px"></span>
     </div>
   </div>
-
   <div class="foot">
     <span class="priv">Everything stays on your device. Nothing is sent anywhere.</span><br>
     Pausality · Somnistics Research Labs · pausality.health — a reflection tool, not a diagnosis.<br>
@@ -151,7 +138,6 @@
     representation and attentional allocation to the body. Not a pulmonary function test.</span>
   </div>
 </div>
-
 <script>
 const REST_OPTS=[
   {k:'A',v:'chest',t:'My chest hand moved more'},
@@ -165,9 +151,7 @@ const LOAD_OPTS=[
   {k:'C',v:'shift',t:'It shifted upward toward my chest / got shallower'},
   {k:'D',v:'unsure',t:'I lost track of my breath entirely while doing the math'},
 ];
-
 const state={rest:null,load:null};
-
 function buildChoices(host,opts,onPick){
   host.innerHTML='';
   opts.forEach(o=>{
@@ -177,7 +161,6 @@ function buildChoices(host,opts,onPick){
     host.appendChild(d);
   });
 }
-
 buildChoices(document.getElementById('c1'),REST_OPTS,v=>{
   state.rest=v;
   const s2=document.getElementById('s2');s2.classList.remove('hide');
@@ -187,16 +170,13 @@ buildChoices(document.getElementById('c2'),LOAD_OPTS,v=>{
   state.load=v;
   reveal();
 });
-
 function reveal(){
-  // "blindness" = anything other than clean belly-dominant at rest AND held under load
   const restOk = state.rest==='belly';
   const loadOk = state.load==='belly';
   const s3=document.getElementById('s3');
   const rEl=document.getElementById('yourResult');
   const dEl=document.getElementById('resultDetail');
   const vH=document.getElementById('verdictH');
-
   if(restOk && loadOk){
     vH.textContent='Diaphragmatic literacy — the rare case';
     rEl.textContent='Your result: belly-led at rest and it held under load.';
@@ -217,16 +197,12 @@ function reveal(){
   s3.classList.remove('hide');
   s3.scrollIntoView({behavior:'smooth',block:'start'});
 }
-
 document.getElementById('toReteach').onclick=()=>{
   const s4=document.getElementById('s4');s4.classList.remove('hide');
   s4.scrollIntoView({behavior:'smooth',block:'start'});
 };
-
-function label(v,map){return map[v]||v;}
 const RESTMAP={chest:'chest-dominant',belly:'belly (diaphragmatic)',both:'chest & belly equal',unsure:'hard to tell'};
 const LOADMAP={chest:'chest took over',belly:'held diaphragmatic',shift:'shifted upward / shallower',unsure:'lost track under load'};
-
 document.getElementById('save').onclick=()=>{
   const blind = !(state.rest==='belly' && state.load==='belly');
   document.getElementById('log').innerHTML=
@@ -235,14 +211,12 @@ document.getElementById('save').onclick=()=>{
   const ls=document.getElementById('logStep');ls.classList.remove('hide');
   ls.scrollIntoView({behavior:'smooth',block:'start'});
 };
-
 document.getElementById('reset').onclick=()=>{
   state.rest=null;state.load=null;
   ['s2','s3','s4','logStep'].forEach(id=>document.getElementById(id).classList.add('hide'));
   document.querySelectorAll('.choice').forEach(c=>c.classList.remove('sel'));
   window.scrollTo({top:0,behavior:'smooth'});
 };
-
 document.getElementById('copy').onclick=()=>{
   const blind = !(state.rest==='belly' && state.load==='belly');
   const txt='Pausality · Diaphragmatic Check\n\n'+
@@ -258,5 +232,9 @@ document.getElementById('copy').onclick=()=>{
   },()=>{document.getElementById('copied').textContent='Select & copy above';});
 };
 </script>
+<aside class="pz-next" style="max-width:640px;margin:48px auto 40px;padding:24px 16px 0;border-top:1px solid rgba(127,127,127,.35);text-align:center;font:inherit;color:inherit">
+  <p style="margin:0 0 14px;line-height:1.5">Want credit for practice like this? The Pausality™ CE course for CRNAs is AANA-approved.</p>
+  <a href="https://pausality.health/ce/?utm_source=pausality-crna-tools&amp;utm_medium=instrument&amp;utm_campaign=diaphragmatic-check" target="_blank" rel="noopener" style="display:inline-block;padding:12px 22px;border:1.5px solid currentColor;border-radius:999px;color:inherit;text-decoration:none;font-weight:600">Earn CE credit</a>
+</aside>
 </body>
 </html>
